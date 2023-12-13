@@ -1,0 +1,48 @@
+version: '3'
+services:
+  webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - LOAD_EXAMPLES=False
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./plugins:/opt/airflow/plugins
+    depends_on:
+      - postgres
+      - redis
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./plugins:/opt/airflow/plugins
+    depends_on:
+      - webserver
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+
+  redis:
+    image: 'redis:latest'
+
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_DB=db
+    volumes:
+      - ./initdb:/docker-entrypoint-initdb.d
+
