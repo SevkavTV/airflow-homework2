@@ -1,7 +1,7 @@
 import openai
 import json
 
-openai.api_key = "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"
+openai.api_key = "openai-api-key"
 
 def analyze_text_with_gpt(content, domain):
     messages = [
